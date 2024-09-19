@@ -39,7 +39,7 @@ export const register = async (req, res) => {
 
 export const login = async(req, res) => {
     try{
-        const {email, password} = req.body;
+        const {email, password, role} = req.body;
         if(!email || !password || !role){
             return res.status(400).json({
                 message : "All fields are required",
@@ -72,9 +72,9 @@ export const login = async(req, res) => {
             userId : user._id
         }
 
-        const token = await jwt.sign(tokenData, process.env.JWT_SECRET, {expiresIn : "1d"}); 
+        const token = await jwt.sign(tokenData, process.env.SECRET_KEY, {expiresIn : "1d"}); 
 
-        uesr = {
+        user = {
             _id : user._id,
             fullname : user.fullname,
             email : user.email,
@@ -108,12 +108,49 @@ export const logout = async(req, res) => {
 export const updateProfile = async(req, res) => {
     try {
         const {fullname, email, phoneNumber, bio, skills} = req.body;
-        if(!fullname || !email || !phoneNumber || !bio || !skills){
+        const file = req.file;
+      
+
+        // cloudinary
+        let skillsArray;
+        if(skills){
+            skillsArray = skills.split(",");
+        }
+        const userId = req.id;
+        let user = await User.findById(userId);
+
+        if(!user){
             return res.status(400).json({
-                message : "All fields are required",
+                message : "User not found",
                 success : false
-            });
+            })
         };
+
+        // updating data
+        if(fullname) user.fullname = fullname
+        if(email) user.email = email
+        if(phoneNumber) user.phoneNumber = phoneNumber
+        if(bio) user.profile.bio = bio
+        if(skills) user.profile.skills = skillsArray
+
+        // resume comes later here
+        await user.save();
+
+        user = {
+            _id : user._id,
+            fullname : user.fullname,
+            email : user.email,
+            phoneNumber : user.phoneNumber,
+            role : user.role,
+            profile : user.profile
+        }
+
+        return res.status(200).json({
+            message : "Profile updated successfully",
+            user, 
+            success : true
+        })
+
     } catch (error) {
         console.log(error);
     }
