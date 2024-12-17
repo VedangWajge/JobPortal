@@ -8,6 +8,9 @@ import { Link, useNavigate } from 'react-router-dom'
 import { USER_API_END_POINT } from '@/utils/constant'
 import { toast } from 'sonner'
 import axios from 'axios'
+import { Loader2 } from 'lucide-react'
+import { useDispatch, useSelector } from 'react-redux'
+import { setLoading } from '@/redux/authSlice'
 
 
 const SignUp = () => {
@@ -18,44 +21,49 @@ const SignUp = () => {
         password: "",
         role: "",
         file: "",
-      });
-    
-      const navigate = useNavigate();
+    });
 
-      const changeEventHandler = (e) => {
-        setInput({...input, [e.target.name]: e.target.value});
-      }
-    
-      const changeFileHandler = (e) => {
-        setInput({...input, file:e.target.files?.[0]});
-      }
+    const { loading } = useSelector(store => store.auth);
+    const navigate = useNavigate();
+    const dispatch = useDispatch();
+
+    const changeEventHandler = (e) => {
+        setInput({ ...input, [e.target.name]: e.target.value });
+    }
+
+    const changeFileHandler = (e) => {
+        setInput({ ...input, file: e.target.files?.[0] });
+    }
 
     const submitHandler = async (e) => {
+        dispatch(setLoading(true));
         e.preventDefault();
         const formData = new FormData();
         formData.append("fullname", input.fullname);
-        formData.append("email", input.email);  
-        formData.append("phoneNumber", input.phoneNumber);  
-        formData.append("password", input.password);  
-        formData.append("role", input.role);  
+        formData.append("email", input.email);
+        formData.append("phoneNumber", input.phoneNumber);
+        formData.append("password", input.password);
+        formData.append("role", input.role);
         console.log(formData);
-        if(input.file){
+        if (input.file) {
             formData.append("file", input.file);
         }
         try {
             const res = await axios.post(`${USER_API_END_POINT}/register`, formData, {
-                headers:{
+                headers: {
                     "Content-Type": "multipart/form-data"
                 },
                 withCredentials: true,
             });
-            if(res.data.success){
+            if (res.data.success) {
                 navigate("/login");
                 toast.success(res.data.message);
             }
         } catch (error) {
             console.log(error);
             toast.error(error.response.data.message);
+        } finally {
+            dispatch(setLoading(false));
         }
     }
 
@@ -159,19 +167,20 @@ const SignUp = () => {
 
                         <div className='flex items-center gap-2'>
                             <Label>Profile</Label>
-                            <Input 
-                            accept="image/*" 
-                            type="file" 
-                            onChange={changeFileHandler}
-                            className="cursor-pointer" />
+                            <Input
+                                accept="image/*"
+                                type="file"
+                                onChange={changeFileHandler}
+                                className="cursor-pointer" />
                         </div>
                     </div>
-                    
 
 
-                    <div>
-                        <Button type="submit" className="w-full bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700 transition duration-200">Sign Up</Button>
-                    </div>
+
+                    {
+                        loading ? <Button className="w-full bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700 transition duration-200"><Loader2 className="mr-2 h-4 w-4 animate-spin" />Please wait</Button> : <Button type="submit" className="w-full bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700 transition duration-200">Sign Up</Button>
+
+                    }
 
                     <span className='text-sm'>Already have an account? <Link to="/login" className='text-blue-600'>Login</Link></span>
 
