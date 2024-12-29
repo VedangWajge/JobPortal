@@ -25,8 +25,8 @@ const AppliedJobTable = () => {
                 <TableCell className="font-medium">{appliedJob?.createdAt.split("T")[0]}</TableCell>
                 <TableCell className="font-medium">{appliedJob?.job?.title}</TableCell>
                 <TableCell className="font-medium">{appliedJob?.job?.company?.name}</TableCell>
-                <TableCell className="font-medium text-right">{ appliedJob?.status === "pending" ? <Badge variant={"outline"} className="bg-green-600 text-white" >{appliedJob?.status}</Badge> : <Badge variant={"outline"} className="bg-red-600 text-white" >{appliedJob?.status}</Badge>}</TableCell>
-              </TableRow>
+                <TableCell className="text-right"><Badge className={`text-white ${appliedJob?.status === "rejected" ? 'hover:bg-red-600 hover:text-white bg-red-400' : appliedJob.status === 'pending' ? 'hover:bg-gray-600 hover:text-white bg-gray-400' : 'hover:bg-green-600 hover:text-white bg-green-400'}`}>{appliedJob.status.toUpperCase()}</Badge></TableCell>
+                </TableRow>
             ))
           }
         </TableBody>

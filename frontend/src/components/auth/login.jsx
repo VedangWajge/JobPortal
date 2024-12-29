@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import Navbar from '../shared/Navbar'
 import { Input } from '../ui/input'
 import { Label } from '../ui/label'
@@ -51,6 +51,12 @@ const Login = () => {
     }
   }
 
+  const { user } = useSelector(store => store.auth);
+  useEffect(() => {
+    if(user){
+      navigate("/");
+    }
+  })
 
   return (
     <div>
