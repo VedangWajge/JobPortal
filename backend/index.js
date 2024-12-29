@@ -12,27 +12,31 @@ dotenv.config({});
 
 const app = express();
 
-
-
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
+// Correct CORS options
 const corsOptions = {
-    origin: "http://localhost:5173",
-    credentials: true
-}
+    origin: [
+        "http://localhost:5173", 
+        "https://v2w-jobportal-frontend.vercel.app"
+    ],
+    credentials: true, // Allow credentials (e.g., cookies) to be sent
+};
+
 app.use(cors(corsOptions));
 
 const PORT = process.env.PORT || 3000;
 
-// api's
+// API routes
 app.use("/api/v1/user", userRoute);
 app.use("/api/v1/company", companyRoute);
 app.use("/api/v1/job", jobRoute);
 app.use("/api/v1/application", applicationRoute);
 
+// Start server
 app.listen(PORT, () => {
     connectDB();
     console.log(`Server is running at port ${PORT}`);
-})
+});
