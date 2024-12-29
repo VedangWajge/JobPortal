@@ -20,7 +20,8 @@ app.use(cookieParser());
 const corsOptions = {
     origin: [
         "http://localhost:5173", 
-        "https://v2w-jobportal-frontend.vercel.app"
+        "https://v2w-jobportal-frontend.vercel.app",
+        "https://jobportal-8kqh.onrender.com"
     ],
     credentials: true, // Allow credentials (e.g., cookies) to be sent
 };
